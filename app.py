@@ -286,33 +286,33 @@ def load_and_train():
     y = df["class"]
 
     # --- แบ่ง train / test ---
-    X_train, X_test, y_train, y_test = train_test_split(
+    features_train, features_test, labels_train, labels_test = train_test_split(
         X, y, test_size=0.2, random_state=42, stratify=y,
     )
 
     # --- สร้างและ train โมเดล ---
     model = GaussianNB()
-    model.fit(X_train, y_train)
+    model.fit(features_train, labels_train)
 
     # --- ทำนายบน test set ---
-    y_pred = model.predict(X_test)
-    y_prob = model.predict_proba(X_test)[:, 1]
+    predicted_labels = model.predict(features_test)
+    predicted_proba = model.predict_proba(features_test)[:, 1]
 
     # --- คำนวณ metrics ---
     metrics = {
-        "Accuracy": accuracy_score(y_test, y_pred),
-        "Precision": precision_score(y_test, y_pred),
-        "Recall": recall_score(y_test, y_pred),
-        "F1-Score": f1_score(y_test, y_pred),
-        "MCC": matthews_corrcoef(y_test, y_pred),
-        "AUC-ROC": roc_auc_score(y_test, y_prob),
+        "Accuracy": accuracy_score(labels_test, predicted_labels),
+        "Precision": precision_score(labels_test, predicted_labels),
+        "Recall": recall_score(labels_test, predicted_labels),
+        "F1-Score": f1_score(labels_test, predicted_labels),
+        "MCC": matthews_corrcoef(labels_test, predicted_labels),
+        "AUC-ROC": roc_auc_score(labels_test, predicted_proba),
     }
 
     # --- คำนวณ confusion matrix ---
-    cm = confusion_matrix(y_test, y_pred)
+    cm = confusion_matrix(labels_test, predicted_labels)
 
     # --- คำนวณ ROC curve ---
-    fpr, tpr, _ = roc_curve(y_test, y_prob)
+    fpr, tpr, _ = roc_curve(labels_test, predicted_proba)
 
     return (
         model, label_encoders, unique_values,
